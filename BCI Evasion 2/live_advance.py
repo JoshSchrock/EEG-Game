@@ -36,6 +36,8 @@ class LiveAdvance():
         self.c.bind(mc_action_sensitivity_done=self.on_mc_action_sensitivity_done)
         self.c.bind(inform_error=self.on_inform_error)
 
+        self.data = None
+
     def start(self, profile_name, headsetId=''):
         """
         To start live process as below workflow
@@ -223,8 +225,8 @@ class LiveAdvance():
         data: dictionary
              the format such as {'action': 'neutral', 'power': 0.0, 'time': 1590736942.8479}
         """
-        data = kwargs.get('data')
-        print('mc data: {}'.format(data))
+        self.data = kwargs.get('data')
+
 
     def on_get_mc_active_action_done(self, *args, **kwargs):
         data = kwargs.get('data')

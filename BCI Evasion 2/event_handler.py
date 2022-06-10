@@ -7,7 +7,7 @@ class EventHandler:
 
     def get_and_handle_events(self):
         self.ManualController()
-        # self.EEGController()
+        self.EEGController()
 
 
     # manual controls to pursue - implemented for testing purposes

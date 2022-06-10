@@ -1,6 +1,7 @@
 import pygame
 from game import Game
 from viewer import Viewer
+from eeg_interface import EEGInterface
 
 """
 Pygame Pursuit-Evader Simulation
@@ -26,7 +27,9 @@ def main():
     clock = pygame.time.Clock()
     frame_rate = 120 # game and display rate
 
-    game = Game(frame_rate)  # Methods of game operation
+    eegInterface = EEGInterface()
+
+    game = Game(eegInterface, frame_rate)  # Methods of game operation
     viewer = Viewer(screen, game)  # display the game
 
     while True:

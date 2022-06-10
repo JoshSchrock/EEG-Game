@@ -5,7 +5,7 @@ from button import Button
 from event_handler import EventHandler
 
 class Game:
-    def __init__(self, frame_rate):
+    def __init__(self, eegInterface, frame_rate):
         self.pursuePos = [random.randint(75, 125), random.randint(875, 925)]
         startx = random.randint(175, 225)
         starty = random.randint(775, 825)
@@ -25,6 +25,7 @@ class Game:
                                    font='comicsans', size=50)
         self.strat = random.randint(0, 2)
         self.eventHandler = EventHandler(self)  # events that control the game
+        self.eegInterface = eegInterface
 
     def run_one_cycle(self):
         self.performEvadeStrat()
