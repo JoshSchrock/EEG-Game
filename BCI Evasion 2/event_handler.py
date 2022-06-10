@@ -57,7 +57,6 @@ class EventHandler:
     def exit_if_time_to_quit(events):
         for event in events:
             if event.type == pygame.QUIT:
-                # need to close BCI connection
                 sys.exit()
 
     @staticmethod
