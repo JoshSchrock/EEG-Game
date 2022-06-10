@@ -23,7 +23,7 @@ def main():
     pygame.init()
     pygame.display.set_caption("Pursuit-Evasion Simulation")  # title on top of game window
 
-    screen = pygame.display.set_mode((1200,1000))  # DONE: Choose your own size
+    screen = pygame.display.set_mode((1200, 1000))  # DONE: Choose your own size
     clock = pygame.time.Clock()
     frame_rate = 120 # game and display rate
 
