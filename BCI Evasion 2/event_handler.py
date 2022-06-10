@@ -38,7 +38,7 @@ class EventHandler:
 
     # controls given to pursuer
     def EEGController(self):
-        action = self.game.pursuer.streamLineData()
+        action = self.game.eegInterface.streamLineData()
         # left
         if action == "left" and self.game.pursuePos[0] > self.game.velocity:
             self.game.pursuePos[0] -= self.game.velocity
