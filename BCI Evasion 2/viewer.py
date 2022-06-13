@@ -23,5 +23,8 @@ class Viewer:
         pygame.draw.circle(self.screen, GREY, self.game.falseTarget, self.game.targetRadius)
         # draw exit button
         self.game.close_button.draw(self.screen)
+        # draw images
+        for image in self.game.images:
+            image.draw(self.screen)
         # update display
         pygame.display.update()
