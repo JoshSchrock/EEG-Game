@@ -7,7 +7,7 @@ from image_handler import ImageHandler
 
 
 class Game:
-    def __init__(self, eegInterface, frame_rate):
+    def __init__(self, eegInterfaces, frame_rate):
         self.images = None
         self.timer = None
         self.endVec = None
@@ -19,7 +19,7 @@ class Game:
         self.evadePos = None
         self.evadeStart = None
         self.pursuePos = None
-        self.eegInterface = eegInterface
+        self.eegInterfaces = eegInterfaces
         
         desired_velocity = 10  # velocity without respect to frame rate
         self.velocity = desired_velocity * (20 / frame_rate)

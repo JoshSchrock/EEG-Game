@@ -27,9 +27,16 @@ def main():
     clock = pygame.time.Clock()
     frame_rate = 120 # game and display rate
 
-    eegInterface = EEGInterface()
+    headset_1 = 'EPOCFLEX-F0000172'
+    headset_2 = 'EPOCFLEX-F000015B'
 
-    game = Game(eegInterface, frame_rate)  # Methods of game operation
+    profile_name_1 = "Josh Schrock"
+    profile_name_2 = "Test 1"
+
+    eegInterface1 = EEGInterface(headset_1, profile_name_1)
+    eegInterface2 = EEGInterface(headset_2, profile_name_2)
+
+    game = Game([eegInterface1, eegInterface2], frame_rate)  # Methods of game operation
     viewer = Viewer(screen, game)  # display the game
 
     while True:

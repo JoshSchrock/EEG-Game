@@ -226,7 +226,7 @@ class LiveAdvance():
              the format such as {'action': 'neutral', 'power': 0.0, 'time': 1590736942.8479}
         """
         self.data = kwargs.get('data')
-        print(self.data)
+        print(f"headset {self.c.headset_id}: {self.data}")
 
 
     def on_get_mc_active_action_done(self, *args, **kwargs):
