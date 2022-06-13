@@ -1,4 +1,5 @@
 from cortex import Cortex
+import time
 
 class LiveAdvance():
     """
@@ -34,6 +35,11 @@ class LiveAdvance():
         self.c.bind(new_com_data=self.on_new_com_data)
         self.c.bind(get_mc_active_action_done=self.on_get_mc_active_action_done)
         self.c.bind(mc_action_sensitivity_done=self.on_mc_action_sensitivity_done)
+        self.c.bind(inform_error=self.on_inform_error)
+        self.c.bind(create_session_done=self.on_create_session_done)
+        self.c.bind(create_record_done=self.on_create_record_done)
+        self.c.bind(stop_record_done=self.on_stop_record_done)
+        self.c.bind(export_record_done=self.on_export_record_done)
         self.c.bind(inform_error=self.on_inform_error)
 
         self.data = None
@@ -256,6 +262,64 @@ class LiveAdvance():
             # disconnect headset for next use
             print('Get error ' + error_message + ". Disconnect headset to fix this issue for next use.")
             self.c.disconnect_headset()
+
+    def create_record(self, record_title, **kwargs):
+        """
+        To create a record
+        Parameters
+        ----------
+        record_title : string, required
+             title  of record
+        other optional params: Please reference to https://emotiv.gitbook.io/cortex-api/records/createrecord
+        Returns
+        -------
+        None
+        """
+        print('start recording -------------------------')
+        self.c.create_record(record_title, **kwargs)
+
+    def stop_record(self):
+        self.c.stop_record()
+
+    def export_record(self, folder, stream_types, format, record_ids,
+                      version, **kwargs):
+        """
+        To export records
+        Parameters
+        ----------
+        More detail at https://emotiv.gitbook.io/cortex-api/records/exportrecord
+        Returns
+        -------
+        None
+        """
+        self.c.export_record(folder, stream_types, format, record_ids, version, **kwargs)
+
+
+    def on_create_record_done(self, *args, **kwargs):
+
+        data = kwargs.get('data')
+        self.record_id = data['uuid']
+        start_time = data['startDatetime']
+        title = data['title']
+        print('on_create_record_done: recordId: {0}, title: {1}, startTime: {2}'.format(self.record_id, title,
+                                                                                        start_time))
+
+    def on_stop_record_done(self, *args, **kwargs):
+
+        data = kwargs.get('data')
+        record_id = data['uuid']
+        start_time = data['startDatetime']
+        end_time = data['endDatetime']
+        title = data['title']
+        print('on_stop_record_done: recordId: {0}, title: {1}, startTime: {2}, endTime: {3}'.format(record_id, title,
+                                                                                                    start_time,
+                                                                                                    end_time))
+
+    def on_export_record_done(self, *args, **kwargs):
+        print('on_export_record_done: the successful record exporting as below:')
+        data = kwargs.get('data')
+        print(data)
+
 
 
 # -----------------------------------------------------------

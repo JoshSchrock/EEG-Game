@@ -1,6 +1,7 @@
 from live_advance import LiveAdvance
 import threading
 from datetime import datetime
+import os
 
 
 class EEGInterface:
@@ -23,7 +24,6 @@ class EEGInterface:
     def beginStream(self):
         self.liveAdvance.start(self.profile_name, self.headset_id)
 
-
     # opens and runs session
     def streamLineData(self):
         # collect each line of stdout from live_advance.py
@@ -39,5 +39,20 @@ class EEGInterface:
     def close(self):
         self.liveAdvance.c.close_session()
         self.eeg_thread.join()
+
+    def createRecording(self):
+        self.liveAdvance.create_record(f"EEG-Game_{self.profile_name}_{self.headset_id}")
+
+    def endRecording(self):
+        self.liveAdvance.stop_record()
+        record_export_folder = f"{os.getcwd()}/EEGExports"  # your place to export, you should have write permission, example on desktop
+        record_export_data_types = ['EEG', 'MOTION', 'PM', 'BP']
+        record_export_format = 'CSV'
+        record_export_version = 'V2'
+        #  (folder, stream_types, format, record_ids, version, **kwargs)
+        self.liveAdvance.export_record(record_export_folder, record_export_data_types,
+                                       record_export_format, self.liveAdvance.record_id, record_export_version)
+
+
 
 
