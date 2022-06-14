@@ -41,6 +41,7 @@ class LiveAdvance():
         self.c.bind(stop_record_done=self.on_stop_record_done)
         self.c.bind(export_record_done=self.on_export_record_done)
         self.c.bind(inform_error=self.on_inform_error)
+        self.c.bind(warn_cortex_stop_all_sub=self.on_warn_cortex_stop_all_sub)
 
         self.data = None
 
@@ -278,11 +279,15 @@ class LiveAdvance():
         print('start recording -------------------------')
         self.c.create_record(record_title, **kwargs)
 
-    def stop_record(self):
+    def stop_record(self, folder, stream_types, format, record_ids, version):
+        self.folder = folder
+        self.stream_types = stream_types
+        self.format = format
+        self.record_ids = record_ids
+        self.version = version
         self.c.stop_record()
 
-    def export_record(self, folder, stream_types, format, record_ids,
-                      version, **kwargs):
+    def export_record(self, **kwargs):
         """
         To export records
         Parameters
@@ -292,7 +297,7 @@ class LiveAdvance():
         -------
         None
         """
-        self.c.export_record(folder, stream_types, format, record_ids, version, **kwargs)
+        self.c.export_record(self.folder, self.stream_types, self.format, self.record_ids, self.version, **kwargs)
 
 
     def on_create_record_done(self, *args, **kwargs):
@@ -314,6 +319,14 @@ class LiveAdvance():
         print('on_stop_record_done: recordId: {0}, title: {1}, startTime: {2}, endTime: {3}'.format(record_id, title,
                                                                                                     start_time,
                                                                                                     end_time))
+
+    def on_warn_cortex_stop_all_sub(self, *args, **kwargs):
+        print('on_warn_cortex_stop_all_sub')
+        # cortex has closed session. Wait some seconds before exporting record
+        time.sleep(3)
+
+        # export record
+        self.export_record()
 
     def on_export_record_done(self, *args, **kwargs):
         print('on_export_record_done: the successful record exporting as below:')

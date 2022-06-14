@@ -1,6 +1,7 @@
 from live_advance import LiveAdvance
 import threading
 from datetime import datetime
+import time
 import os
 
 
@@ -11,7 +12,7 @@ class EEGInterface:
         your_app_license = 'd5b584b8-883e-421f-8bf5-cbe4bcb0ac72'
         self.headset_id = headset_id
         self.profile_name = profile_name
-
+        self.record = False
 
         # Init live advance
         self.liveAdvance = LiveAdvance(your_app_client_id, your_app_client_secret, license=your_app_license)
@@ -19,7 +20,6 @@ class EEGInterface:
         self.eeg_thread = threading.Thread(target=self.beginStream, name=threadName)
         self.eeg_thread.daemon = True
         self.eeg_thread.start()
-
 
     def beginStream(self):
         self.liveAdvance.start(self.profile_name, self.headset_id)
@@ -37,22 +37,22 @@ class EEGInterface:
 
     # disconnects headset and closes session
     def close(self):
-        self.liveAdvance.c.close_session()
+        if self.record is True:
+            self.liveAdvance.c.disconnect_headset()
+            time.sleep(3)
         self.eeg_thread.join()
+        self.record = False
 
     def createRecording(self):
         self.liveAdvance.create_record(f"EEG-Game_{self.profile_name}_{self.headset_id}")
+        self.record = True
 
     def endRecording(self):
-        self.liveAdvance.stop_record()
-        record_export_folder = f"{os.getcwd()}/EEGExports"  # your place to export, you should have write permission, example on desktop
+        record_export_folder = r"C:\Users\larx\Desktop\Exports"  # your place to export, you should have write
+        # permission, example on desktop
         record_export_data_types = ['EEG', 'MOTION', 'PM', 'BP']
         record_export_format = 'CSV'
         record_export_version = 'V2'
         #  (folder, stream_types, format, record_ids, version, **kwargs)
-        self.liveAdvance.export_record(record_export_folder, record_export_data_types,
-                                       record_export_format, self.liveAdvance.record_id, record_export_version)
-
-
-
-
+        self.liveAdvance.stop_record(record_export_folder, record_export_data_types,
+                                     record_export_format, [self.liveAdvance.record_id], record_export_version)

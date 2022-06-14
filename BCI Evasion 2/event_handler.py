@@ -1,5 +1,6 @@
 import pygame
 import sys
+import time
 
 class EventHandler:
     def __init__(self, game):
@@ -29,11 +30,23 @@ class EventHandler:
         mousex, mousey = pygame.mouse.get_pos()
         if self.game.close_button.isOver((mousex, mousey)):
             self.game.close_button.outline = 20
-            for event in events:
-                if event.type == pygame.MOUSEBUTTONUP:
-                    sys.exit()
         else:
             self.game.close_button.outline = 0
+
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONUP and self.game.close_button.isOver((mousex, mousey)):
+                for eeg in self.game.eegInterfaces:
+                    eeg.close()
+                    time.sleep(3)
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_F5:
+                    for eeg in self.game.eegInterfaces:
+                        eeg.createRecording()
+                if event.key == pygame.K_F6:
+                    for eeg in self.game.eegInterfaces:
+                        eeg.endRecording()
+
 
 
     # controls given to pursuer
