@@ -332,6 +332,7 @@ class LiveAdvance():
         print('on_export_record_done: the successful record exporting as below:')
         data = kwargs.get('data')
         print(data)
+        self.c.close()
 
 
 
