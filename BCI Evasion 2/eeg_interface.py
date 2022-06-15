@@ -44,15 +44,16 @@ class EEGInterface:
         self.record = False
 
     def createRecording(self):
-        self.liveAdvance.create_record(f"EEG-Game_{self.profile_name}_{self.headset_id}")
+        record_path = f"EEG-Game_{self.profile_name}_{self.headset_id}"
+        record_description = "A test of the eeg game recording system"
+        self.liveAdvance.create_record(record_path, description=record_description)
         self.record = True
 
     def endRecording(self):
-        record_export_folder = r"C:\Users\larx\Desktop\Exports"  # your place to export, you should have write
+        self.liveAdvance.record_export_folder = r"C:\Users\larx\Desktop\Exports"  # your place to export, you should have write
         # permission, example on desktop
-        record_export_data_types = ['EEG', 'MOTION', 'PM', 'BP']
-        record_export_format = 'CSV'
-        record_export_version = 'V2'
+        self.liveAdvance.record_export_data_types = ['EEG', 'MOTION', 'PM', 'BP']
+        self.liveAdvance.record_export_format = 'CSV'
+        self.liveAdvance.record_export_version = 'V2'
         #  (folder, stream_types, format, record_ids, version, **kwargs)
-        self.liveAdvance.stop_record(record_export_folder, record_export_data_types,
-                                     record_export_format, [self.liveAdvance.record_id], record_export_version)
+        self.liveAdvance.stop_record()

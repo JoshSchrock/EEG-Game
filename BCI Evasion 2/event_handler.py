@@ -35,9 +35,6 @@ class EventHandler:
 
         for event in events:
             if event.type == pygame.MOUSEBUTTONUP and self.game.close_button.isOver((mousex, mousey)):
-                for eeg in self.game.eegInterfaces:
-                    eeg.close()
-                    time.sleep(3)
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_F5:

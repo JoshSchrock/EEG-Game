@@ -39,9 +39,14 @@ class LiveAdvance():
         self.c.bind(create_session_done=self.on_create_session_done)
         self.c.bind(create_record_done=self.on_create_record_done)
         self.c.bind(stop_record_done=self.on_stop_record_done)
+        self.c.bind(warn_cortex_stop_all_sub=self.on_warn_cortex_stop_all_sub)
         self.c.bind(export_record_done=self.on_export_record_done)
         self.c.bind(inform_error=self.on_inform_error)
-        self.c.bind(warn_cortex_stop_all_sub=self.on_warn_cortex_stop_all_sub)
+
+        self.record_export_folder = ''
+        self.record_export_data_types = ''
+        self.record_export_format = ''
+        self.record_export_version = ''
 
         self.data = None
 
@@ -276,18 +281,13 @@ class LiveAdvance():
         -------
         None
         """
-        print('start recording -------------------------')
         self.c.create_record(record_title, **kwargs)
 
-    def stop_record(self, folder, stream_types, format, record_ids, version):
-        self.folder = folder
-        self.stream_types = stream_types
-        self.format = format
-        self.record_ids = record_ids
-        self.version = version
+    def stop_record(self):
         self.c.stop_record()
 
-    def export_record(self, **kwargs):
+    def export_record(self, folder, stream_types, format, record_ids,
+                      version, **kwargs):
         """
         To export records
         Parameters
@@ -297,7 +297,7 @@ class LiveAdvance():
         -------
         None
         """
-        self.c.export_record(self.folder, self.stream_types, self.format, self.record_ids, self.version, **kwargs)
+        self.c.export_record(folder, stream_types, format, record_ids, version, **kwargs)
 
 
     def on_create_record_done(self, *args, **kwargs):
@@ -308,6 +308,7 @@ class LiveAdvance():
         title = data['title']
         print('on_create_record_done: recordId: {0}, title: {1}, startTime: {2}'.format(self.record_id, title,
                                                                                         start_time))
+
 
     def on_stop_record_done(self, *args, **kwargs):
 
@@ -320,13 +321,18 @@ class LiveAdvance():
                                                                                                     start_time,
                                                                                                     end_time))
 
+        # disconnect headset to export record
+        print('on_stop_record_done: Disconnect the headset to export record')
+        self.c.disconnect_headset()
+
     def on_warn_cortex_stop_all_sub(self, *args, **kwargs):
         print('on_warn_cortex_stop_all_sub')
         # cortex has closed session. Wait some seconds before exporting record
         time.sleep(3)
 
         # export record
-        self.export_record()
+        self.export_record(self.record_export_folder, self.record_export_data_types,
+                           self.record_export_format, [self.record_id], self.record_export_version)
 
     def on_export_record_done(self, *args, **kwargs):
         print('on_export_record_done: the successful record exporting as below:')
