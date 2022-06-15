@@ -1,6 +1,5 @@
 import pygame
 import sys
-import time
 
 class EventHandler:
     def __init__(self, game):
