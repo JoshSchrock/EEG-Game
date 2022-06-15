@@ -14,8 +14,8 @@ import warnings
 import os  #  file paths
 warnings.filterwarnings("ignore")
 
-edf_file_name = ''
-f = pyedflib.EdfReader(f"{os.getcwd()}\BCI Evasion 2\EEGExports\{edf_file_name}.edf")
+edf_file_name = 'EEG-Game_Josh Schrock_EPOCFLEX-F0000172_EPOCFLEX_123045_2022.06.15T16.01.52.04.00'
+f = pyedflib.EdfReader(f"{os.getcwd()}\\BCI Evasion 2\\EEGExports\\{edf_file_name}.edf")
 n = f.signals_in_file
 print("Signal Numbers:", n)
 
@@ -35,7 +35,7 @@ print(x.shape)
 
 for i in range(n):
 
-  f = pyedflib.EdfReader(f"{os.getcwd()}\BCI Evasion 2\EEGExports\{edf_file_name}.edf")
+  f = pyedflib.EdfReader(f"{os.getcwd()}\\BCI Evasion 2\\EEGExports\\{edf_file_name}.edf")
   if i>=4 and i<18:
     label = f.getLabel(i)
     print(label)
@@ -273,12 +273,23 @@ def draw_png(data):
 
   return plt
 
+
+# make dir
+new_dir = f'{os.getcwd()}\\EEGNetExports\\{edf_file_name}'
+if not os.path.exists(new_dir):
+    os.makedirs(new_dir)
+    os.makedirs(f'{new_dir}\\Chuncks')
+else:
+    if not os.path.exists(f'{new_dir}\\Chuncks'):
+        os.makedirs(f'{new_dir}\\Chuncks')
+
+
 ch_data = np.array_split(eeg_data, 50, axis=1)
 for i in range(len(ch_data)):
   # print(ch_data.type)
   ax.clear
   plt = draw_png(ch_data[i])
-  pngname = 'trial' + '1' + 'chunck' + str(i) + '.png'
+  pngname = f'{new_dir}\\Chuncks\\chunck_{str(i)}.png'
   plt.savefig(pngname, format="PNG", bbox_inches='tight')
 
 from PIL import Image
@@ -286,11 +297,11 @@ from PIL import Image
 frames = []
     
 for i in range(50):
-   file = 'trial' + '1' + 'chunck' + str(i) + '.png'
+   file = f'{new_dir}\\Chuncks\\chunck_{str(i)}.png'
    newFrame = Image.open(file)
    frames.append(newFrame)
 
 # Save into a GIF file that loops forever
-saveFile = f'{os.getcwd()}\EEGNetExports\Net_of_{edf_file_name}.gif'
+saveFile = f'{new_dir}\\Net_of_{edf_file_name}.gif'
 frames[0].save(saveFile, format='GIF', append_images=frames[1:], 
                save_all=True, duration=300, loop=0)
