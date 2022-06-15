@@ -66,7 +66,7 @@ class EventHandler:
                 cumVerDir += power
 
         self.game.pursuePos[0] += (cumHorDir / len(self.game.eegInterfaces)) * self.game.velocity
-        self.game.pursuePos[0] += (cumVerDir / len(self.game.eegInterfaces)) * self.game.velocity
+        self.game.pursuePos[1] += (cumVerDir / len(self.game.eegInterfaces)) * self.game.velocity
 
 
     @staticmethod
