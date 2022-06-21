@@ -41,7 +41,7 @@ class LiveAdvance():
         self.c.bind(stop_record_done=self.on_stop_record_done)
         self.c.bind(warn_cortex_stop_all_sub=self.on_warn_cortex_stop_all_sub)
         self.c.bind(export_record_done=self.on_export_record_done)
-        self.c.bind(inform_error=self.on_inform_error)
+        self.c.bind(inject_marker_done=self.on_inject_marker_done)
 
         self.record_export_folder = ''
         self.record_export_data_types = ''
@@ -49,6 +49,7 @@ class LiveAdvance():
         self.record_export_version = ''
 
         self.data = None
+        self.last_marker_id = ''
 
     def start(self, profile_name, headsetId=''):
         """
@@ -339,6 +340,42 @@ class LiveAdvance():
         data = kwargs.get('data')
         print(data)
         self.c.close()
+
+    def inject_marker(self, time, value, label, **kwargs):
+        """
+        To create an "instance" marker to the current record of a session
+        Parameters
+        ----------
+        Please reference to https://emotiv.gitbook.io/cortex-api/markers/injectmarker
+        Returns
+        -------
+        None
+        """
+        self.c.inject_marker_request(time, value, label, **kwargs)
+
+    def update_marker(self, markerId, time, **kwargs):
+        """
+        To update a marker that was previously created by inject_marker
+        Parameters
+        ----------
+        Please reference to https://emotiv.gitbook.io/cortex-api/markers/updatemarker
+        Returns
+        -------
+        None
+        """
+        self.c.update_marker_request(markerId, time, **kwargs)
+
+    def on_inject_marker_done(self, *args, **kwargs):
+
+        data = kwargs.get('data')
+        marker_id = data['uuid']
+        start_time = data['startDatetime']
+        marker_type = data['type']
+        marker_label = data['label']
+        if 'Control' in marker_label:
+            self.last_marker_id = marker_id
+        print('on_inject_marker_done: markerId: {0}, type: {1}, startTime: {2}'.format(marker_id, marker_type,
+                                                                                       start_time))
 
 
 

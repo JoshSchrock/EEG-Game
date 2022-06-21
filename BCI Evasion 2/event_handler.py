@@ -55,15 +55,21 @@ class EventHandler:
             # left
             if action == "left" and self.game.pursuePos[0] > self.game.velocity:
                 cumHorDir -= power
+                eeg.add_control_marker('left')
             # right
             if action == "right" and self.game.pursuePos[0] < 1000 - self.game.width - self.game.velocity:
                 cumHorDir += power
+                eeg.add_control_marker('right')
             # up
             if action == "lift" and self.game.pursuePos[1] > self.game.velocity:
                 cumVerDir -= power
+                eeg.add_control_marker('lift')
             # down
             if action == "drop" and self.game.pursuePos[1] < 1000 - self.game.height - self.game.velocity:
                 cumVerDir += power
+                eeg.add_control_marker('drop')
+            if action == 'neutral':
+                eeg.update_control_marker()
 
         self.game.pursuePos[0] += (cumHorDir / len(self.game.eegInterfaces)) * self.game.velocity
         self.game.pursuePos[1] += (cumVerDir / len(self.game.eegInterfaces)) * self.game.velocity

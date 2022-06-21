@@ -1,6 +1,7 @@
 from live_advance import LiveAdvance
 import threading
 from datetime import datetime
+import time
 
 class EEGInterface:
     def __init__(self, your_app_client_id, your_app_client_secret, your_app_license, record_export_folder,
@@ -11,6 +12,10 @@ class EEGInterface:
         self.record_export_folder = record_export_folder
         self.record_export_format = record_export_format
         self.record_export_version = record_export_version
+
+        #  initialize markers
+        self.control_marker = 0
+        self.game_marker = 0
 
         # Init live advance
         self.liveAdvance = LiveAdvance(your_app_client_id, your_app_client_secret, license=your_app_license)
@@ -31,7 +36,7 @@ class EEGInterface:
         if output:
             # determines / executes action
             return output['action'], output['power']
-        return 'neutral'
+        return 'neutral', 0
 
     def createRecording(self):
         record_path = f"EEG-Game_{self.profile_name}_{self.headset_id}"
@@ -52,3 +57,29 @@ class EEGInterface:
             self.liveAdvance.record_export_data_types = ['EEG', 'MOTION', 'PM', 'BP']
         #  (folder, stream_types, format, record_ids, version, **kwargs)
         self.liveAdvance.stop_record()
+
+    def add_control_marker(self, direction):
+        marker_time = time.time() * 1000
+
+        self.control_marker += 1
+
+        # marker_label
+        label = f"Control:_{self.headset_id}_{str(self.control_marker)}"
+
+        self.liveAdvance.inject_marker(marker_time, direction, label, port='EEG-Game')
+
+    def add_game_marker(self):
+        marker_time = time.time() * 1000
+
+        self.game_marker += 1
+
+        # marker_label
+        label = f"Game:_{str(self.game_marker)}"
+
+        self.liveAdvance.inject_marker(marker_time, 1, label, port='EEG-Game')
+
+    def end_control_marker(self):
+        if self.liveAdvance.last_marker_id is not None:
+            marker_time = time.time() * 1000
+            self.liveAdvance.update_marker(self.liveAdvance.last_marker_id, marker_time)
+            self.liveAdvance.last_marker_id = None

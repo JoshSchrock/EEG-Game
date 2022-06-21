@@ -51,6 +51,8 @@ class Game:
         self.images = []
 
         self.timer = 0
+        for eeg in self.eegInterfaces:
+            eeg.add_game_marker()
         
         
     def run_one_cycle(self):
