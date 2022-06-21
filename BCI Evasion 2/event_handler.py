@@ -68,7 +68,7 @@ class EventHandler:
             # up
             if action == "lift" and self.game.pursuePos[1] > self.game.velocity:
                 cumVerDir -= power
-                if self.last_marker != 'drop':
+                if self.last_marker != 'lift':
                     eeg.add_control_marker(4)
                     self.last_marker = 'lift'
             # down
