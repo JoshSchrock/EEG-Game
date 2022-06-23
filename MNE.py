@@ -124,3 +124,34 @@ mat['arr'] = np.array(matlab.transpose())
 
 save_mat = f"{os.getcwd()}\\MATExports\\{edf_file_name}.mat"
 scipy.io.savemat(save_mat, mat)
+
+# from mne.datasets import fetch_fsaverage
+# fs_dir = fetch_fsaverage(verbose=True)
+# subjects_dir = os.path.dirname(fs_dir)
+#
+# # src = os.path.join(fs_dir, 'bem', 'fsaverage-ico-5-src.fif')
+# src = mne.setup_volume_source_space()
+# trans = 'fsaverage'  # MNE has a built-in fsaverage transformation
+# # Check that the locations of EEG electrodes is correct with respect to MRI
+# mne.viz.plot_alignment(
+#     raw.info, src=src, eeg=['original', 'projected'], trans=trans,
+#     show_axes=True, mri_fiducials=True, dig='fiducials')
+#
+# # plot------------------------------
+# for matrix in corr_matrix:
+#     new_matrix = []
+#     for i in matrix:
+#         list = []
+#         for j in i:
+#             list.append(j[0])
+#         new_matrix.append(list)
+#
+#     print(matrix)
+#     print(new_matrix)
+#     print(src[0])
+#
+#     degree = mne_connectivity.degree(new_matrix, 0.15)
+#     stc = mne.VolSourceEstimate(degree, [src[0]['vertno']], 0, 1, 'bst_resting')
+#     brain = stc.plot(
+#         src, clim=dict(kind='percent', lims=[75, 85, 95]), colormap='gnuplot',
+#         subjects_dir=subjects_dir, mode='glass_brain')
