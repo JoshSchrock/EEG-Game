@@ -7,10 +7,26 @@ from matplotlib import patches
 import os
 
 class EpochsToCorrelation:
-    def __init__(self, epoch_data, method='envelope', threshold=None):
-        self.epoch_data = epoch_data
+    def __init__(self, epochs, freq='all', method='envelope', threshold=None):
         self.corr_matrix = None
         self.threshold = threshold
+        self.freq = freq
+        self.method = method
+
+        if freq == 'all':
+            epochs.load_data().filter(l_freq=0.5, h_freq=42)
+        elif freq == 'delta':
+            epochs.load_data().filter(l_freq=0.5, h_freq=3)
+        elif freq == 'theta':
+            epochs.load_data().filter(l_freq=3, h_freq=8)
+        elif freq == 'alpha':
+            epochs.load_data().filter(l_freq=8, h_freq=12)
+        elif freq == 'beta':
+            epochs.load_data().filter(l_freq=12, h_freq=38)
+        elif freq == 'gamma':
+            epochs.load_data().filter(l_freq=38, h_freq=42)
+
+        self.epoch_data = epochs.get_data()
 
         if method == 'envelope':
             self.envelope()
@@ -120,7 +136,7 @@ class EpochsToCorrelation:
 
     def export(self, export_name):
         # make dir
-        new_dir = f'{os.getcwd()}\\EEGNetExports\\{export_name}'
+        new_dir = f'{os.getcwd()}\\EEGNetExports\\{export_name}\\{self.method}\\{self.freq}'
         if not os.path.exists(new_dir):
             os.makedirs(new_dir)
             os.makedirs(f'{new_dir}\\Chuncks')
