@@ -17,15 +17,15 @@ class EpochsToCorrelation:
         if freq == 'all':
             epochs.load_data().filter(l_freq=0.5, h_freq=42)
         elif freq == 'delta':
-            epochs.load_data().filter(l_freq=0.5, h_freq=3)
+            epochs.load_data().filter(l_freq=0.5, h_freq=4)
         elif freq == 'theta':
-            epochs.load_data().filter(l_freq=3, h_freq=8)
+            epochs.load_data().filter(l_freq=4, h_freq=8)
         elif freq == 'alpha':
-            epochs.load_data().filter(l_freq=8, h_freq=12)
+            epochs.load_data().filter(l_freq=8, h_freq=13)
         elif freq == 'beta':
-            epochs.load_data().filter(l_freq=12, h_freq=38)
+            epochs.load_data().filter(l_freq=13, h_freq=30)
         elif freq == 'gamma':
-            epochs.load_data().filter(l_freq=38, h_freq=42)
+            epochs.load_data().filter(l_freq=30, h_freq=42)
 
         self.epoch_data = epochs.get_data(picks=['eeg'])
 
