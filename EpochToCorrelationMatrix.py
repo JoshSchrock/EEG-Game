@@ -8,7 +8,7 @@ import os
 import scipy.signal as sig
 
 class EpochsToCorrelation:
-    def __init__(self, epochs, freq='all', method='envelope', threshold=None):
+    def __init__(self, epochs, freq='all', method='pearson', threshold=None):
         self.corr_matrix = None
         self.threshold = threshold
         self.freq = freq
