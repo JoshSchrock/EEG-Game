@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib import patches
 import os
+import scipy.signal as sig
 
 class EpochsToCorrelation:
     def __init__(self, epochs, freq='all', method='envelope', threshold=None):
@@ -32,8 +33,10 @@ class EpochsToCorrelation:
             self.envelope()
         elif method == 'pearson':
             self.pearson()
+        elif method == 'plv':
+            self.plv()
 
-        print(np.array(self.corr_matrix))
+        # print(np.array(self.corr_matrix))
 
     def envelope(self):
         corr_matrix = mne_connectivity.envelope_correlation(self.epoch_data).get_data()
@@ -59,7 +62,26 @@ class EpochsToCorrelation:
             self.corr_matrix.append(pearson.tolist())
 
         if self.threshold is None:
-            self.threshold = np.quantile(self.corr_matrix, 0.8)
+            self.threshold = np.nanquantile(self.corr_matrix, 0.8)
+
+    def plv(self):
+        self.corr_matrix = []
+        for epoch in self.epoch_data:
+            cur_array = np.array(epoch)
+            hilbert_matrix = np.apply_along_axis(sig.hilbert, 1, cur_array)
+            phase_difference_mat = np.zeros((hilbert_matrix.shape[0], hilbert_matrix.shape[0], hilbert_matrix.shape[1]))
+            for i in range(len(hilbert_matrix)):
+                x = hilbert_matrix - hilbert_matrix[i]
+                phase_difference_mat[i] = x
+            phase_difference_mat = np.mod(phase_difference_mat, (2 * np.pi))
+            phase_difference_mat = phase_difference_mat * 1j
+            phase_difference_mat = np.exp(phase_difference_mat)
+            plv = np.abs(np.mean(phase_difference_mat, axis=2))
+            self.corr_matrix.append(plv.tolist())
+
+        if self.threshold is None:
+            self.threshold = np.nanquantile(self.corr_matrix, 0.8)
+
 
     def show_figures(self, plot_matrix=True, draw_network=True):
         if plot_matrix and not draw_network:
@@ -117,7 +139,7 @@ class EpochsToCorrelation:
                     if matrix[i][j] > self.threshold:
                         G.add_edges_from(edge)
                         nx.draw_networkx_edges(G, pos=pos, edgelist=edge,
-                                               width=(10 ** (matrix[i][j] - self.threshold)), edge_color='grey')
+                                               width=(10000 ** (matrix[i][j] - self.threshold)), edge_color='grey')
 
         # hot nodes
         color_map = []
