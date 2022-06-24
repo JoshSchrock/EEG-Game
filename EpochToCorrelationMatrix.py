@@ -27,7 +27,7 @@ class EpochsToCorrelation:
         elif freq == 'gamma':
             epochs.load_data().filter(l_freq=38, h_freq=42)
 
-        self.epoch_data = epochs.get_data()
+        self.epoch_data = epochs.get_data(picks=['eeg'])
 
         if method == 'envelope':
             self.envelope()
@@ -36,7 +36,7 @@ class EpochsToCorrelation:
         elif method == 'plv':
             self.plv()
 
-        # print(np.array(self.corr_matrix))
+        print(np.array(self.corr_matrix))
 
     def envelope(self):
         corr_matrix = mne_connectivity.envelope_correlation(self.epoch_data).get_data()
@@ -68,10 +68,11 @@ class EpochsToCorrelation:
         self.corr_matrix = []
         for epoch in self.epoch_data:
             cur_array = np.array(epoch)
-            hilbert_matrix = np.apply_along_axis(sig.hilbert, 1, cur_array)
-            phase_difference_mat = np.zeros((hilbert_matrix.shape[0], hilbert_matrix.shape[0], hilbert_matrix.shape[1]))
-            for i in range(len(hilbert_matrix)):
-                x = hilbert_matrix - hilbert_matrix[i]
+            hilbert_angle_matrix = np.angle(sig.hilbert(cur_array, axis=1))
+            phase_difference_mat = np.zeros((hilbert_angle_matrix.shape[0], hilbert_angle_matrix.shape[0],
+                                             hilbert_angle_matrix.shape[1]))
+            for i in range(len(hilbert_angle_matrix)):
+                x = hilbert_angle_matrix - hilbert_angle_matrix[i]
                 phase_difference_mat[i] = x
             phase_difference_mat = np.mod(phase_difference_mat, (2 * np.pi))
             phase_difference_mat = phase_difference_mat * 1j
@@ -97,11 +98,11 @@ class EpochsToCorrelation:
 
     def plot(self, index, matrix):
         color_lims = np.percentile(np.array(matrix), [5, 95])
-        f = plt.figure(figsize=(3, 2))
+        f = plt.figure(figsize=(4, 3))
         plt.matshow(matrix, fignum=f.number, clim=color_lims)
         cb = plt.colorbar()
         cb.ax.tick_params(labelsize=14)
-        plt.title(f'Covariance Correlation Matrix {str(index)}')
+        plt.title(f'{self.method} correlation matrix {str(index)}')
 
     def draw_network(self, index, matrix):
         # plot------------------------------
@@ -139,7 +140,7 @@ class EpochsToCorrelation:
                     if matrix[i][j] > self.threshold:
                         G.add_edges_from(edge)
                         nx.draw_networkx_edges(G, pos=pos, edgelist=edge,
-                                               width=(10000 ** (matrix[i][j] - self.threshold)), edge_color='grey')
+                                               width=min(10, (10000 ** (matrix[i][j] - self.threshold))), edge_color='grey')
 
         # hot nodes
         color_map = []
