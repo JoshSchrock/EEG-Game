@@ -15,9 +15,13 @@ class Viewer:
     def update(self):
         self.screen.fill(WHITE)
         # draw pursuer
-        pygame.draw.rect(self.screen, RED, (self.game.pursuePos[0], self.game.pursuePos[1], self.game.width, self.game.height))
+        pygame.draw.rect(self.screen, RED, (self.game.pursuePos[0] - (.5 * self.game.width),
+                                            self.game.pursuePos[1] - (.5 * self.game.height),
+                                            self.game.width, self.game.height))
         # draw evader
-        pygame.draw.rect(self.screen, BLUE, (self.game.evadePos[0], self.game.evadePos[1], self.game.width, self.game.height))
+        pygame.draw.rect(self.screen, BLUE, (self.game.evadePos[0] - (.5 * self.game.width),
+                                             self.game.evadePos[1] - (.5 * self.game.height),
+                                             self.game.width, self.game.height))
         # draw targets
         pygame.draw.circle(self.screen, GREY, self.game.realTarget, self.game.targetRadius)
         pygame.draw.circle(self.screen, GREY, self.game.falseTarget, self.game.targetRadius)

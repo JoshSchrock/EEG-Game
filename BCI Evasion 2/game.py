@@ -43,10 +43,16 @@ class Game:
         starty = random.randint(775, 825)
         self.evadeStart = [startx, starty]
         self.evadePos = [startx, starty]
-        self.realTarget = [random.randint(700, 900), 125]
-        self.falseTarget = [random.randint(200, 400), 125]
+        op1 = [random.randint(700, 900), 125]
+        op2 = [random.randint(200, 400), 125]
+        if random.randint(0, 1) == 0:
+            self.realTarget = op1
+            self.falseTarget = op2
+        else:
+            self.realTarget = op2
+            self.falseTarget = op1
         self.midpoint = [((self.realTarget[0] + self.falseTarget[0]) // 2), 125]
-        self.endVec = self.getunittoend()
+        self.endVec = self.getunittoend(self.realTarget)
         self.strat = random.randint(0, 2)
         self.images = []
 
@@ -102,22 +108,28 @@ class Game:
     def switchingPath(self):
         timeElapsed = pygame.time.get_ticks() / 1000
         # travel in straight line towards target
-        vecx, vecy = self.getunittoend()
-        self.evadePos = [self.evadePos[0] + vecx, self.evadePos[1] + vecy]
+        vecx, vecy = self.getunittoend(self.realTarget)
+        fvecx, fvecy = self.getunittoend(self.falseTarget)
+        # self.evadePos = [self.evadePos[0] + vecx, self.evadePos[1] + vecy]
         # travel in sinusoidal trajectory towards target
         # <-1/slope * sin(wt), -1/slope * sin(xt)>
-        self.evadePos = [(-self.endVec[0]/self.endVec[1]) * math.sin(timeElapsed * 1) * self.velocity + self.evadePos[0],
-                         (-self.endVec[0]/self.endVec[1]) * math.sin(timeElapsed * 1) * self.velocity + self.evadePos[1]]
+        if self.evadePos[1] > 200:
+            self.evadePos = [vecx * (math.sin(timeElapsed * 1) ** 2) * self.velocity
+                         + fvecx * (math.cos(timeElapsed * 1) ** 2) * self.velocity + self.evadePos[0],
+                         vecy * (math.sin(timeElapsed * 1) ** 2) * self.velocity
+                         + fvecy * (math.cos(timeElapsed * 1) ** 2) * self.velocity + self.evadePos[1]]
+        else:
+            self.evadePos = [self.evadePos[0] + vecx * self.velocity, self.evadePos[1] + vecy * self.velocity]
 
     # ambigious evasion technique - needs to be edited
     def ambiguousPath(self):
         if self.evadePos[0] < self.midpoint[0] and self.evadePos[1] > self.midpoint[1]:
-            vecx, vecy = self.getunittoend()
-            self.evadePos = [self.evadePos[0] + vecx * self.velocity, self.evadePos[1] + vecy * self.velocity]
+            self.evadePos = [self.evadePos[0] + self.velocity, self.evadePos[1] - self.velocity]
         elif self.evadePos[0] >= self.midpoint[0] and self.evadePos[1] > self.midpoint[1]:
             self.evadePos[1] -= self.velocity
         else:
-            self.evadePos[0] += self.velocity
+            vecx, vecy = self.getunittoend(self.realTarget)
+            self.evadePos = [self.evadePos[0] + vecx * self.velocity, self.evadePos[1] + vecy * self.velocity]
 
     def checkloss(self):
         if (self.realTarget[0] - self.targetRadius < self.evadePos[0] < self.realTarget[0] + self.targetRadius
@@ -129,9 +141,9 @@ class Game:
                 and self.pursuePos[1] - self.targetRadius < self.evadePos[1] < self.pursuePos[1] + self.targetRadius):
             return True
 
-    def getunittoend(self):
-        deltay = self.realTarget[1] - self.evadePos[1]
-        deltax = self.realTarget[0] - self.evadePos[0]
+    def getunittoend(self, target):
+        deltay = target[1] - self.evadePos[1]
+        deltax = target[0] - self.evadePos[0]
         mag = math.sqrt((deltax ** 2) + (deltay ** 2))
         return deltax/mag, deltay/mag
 
