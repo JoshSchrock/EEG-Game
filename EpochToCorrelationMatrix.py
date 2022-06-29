@@ -1,5 +1,6 @@
 import mne_connectivity
 import mne
+import numpy
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -186,3 +187,5 @@ class EpochsToCorrelation:
         saveFile = f'{new_dir}\\Net_of_{export_name}.gif'
         frames[0].save(saveFile, format='GIF', append_images=frames[1:],
                        save_all=True, duration=300, loop=0)
+
+        numpy.save(f'{new_dir}\\Numpy_Net_of_{export_name}', self.corr_matrix)
