@@ -189,3 +189,4 @@ class EpochsToCorrelation:
                        save_all=True, duration=300, loop=0)
 
         numpy.save(f'{new_dir}\\Numpy_Net_of_{export_name}', self.corr_matrix)
+        numpy.save(f'{new_dir}\\Numpy_Raw_Epoch_of_{export_name}', self.epoch_data)
